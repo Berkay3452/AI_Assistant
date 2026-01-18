@@ -1,5 +1,4 @@
 import os
-from settings import Settings
 
 def _validate_api_key_security():
     """

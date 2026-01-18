@@ -4,6 +4,7 @@ from settings import Settings
 
 # .env dosyasını yükle
 load_dotenv()
+
 @classmethod
 def validate_api_key(cls):
     """API anahtarının varlığını kontrol eder"""
@@ -38,4 +39,11 @@ def is_exit_command(cls, text):
     return text.lower().strip() in cls.EXIT_COMMANDS
 
 
-
+# Modül yüklendiğinde API anahtarını kontrol et
+@classmethod
+def api_key_control(cls):
+    try:
+        cls.validate_api_key()
+        return "✅ Yapılandırma başarıyla yüklendi"
+    except ValueError as e:
+        return f"⚠️  Yapılandırma uyarısı: {e}"

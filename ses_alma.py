@@ -1,9 +1,9 @@
 import speech_recognition as sr
 
-r = sr.Recognizer()
-m = sr.Microphone()
-
 def sesi_dinle():
+    r = sr.Recognizer()
+    m = sr.Microphone()
+
     with m as source:
         try:
             audio = r.listen(source, timeout=2) #timeout ile ses almayı bekleme süresi belirleniyor.
