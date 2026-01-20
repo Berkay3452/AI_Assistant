@@ -1,7 +1,6 @@
 from ses_alma import sesi_dinle
 from cevap_verme import sesli_cevap
 from model import cevap_olustur
-from utils import is_exit_command
 import asyncio
 
 if __name__ == "__main__":
@@ -17,9 +16,9 @@ if __name__ == "__main__":
                     print(ses_input)
                     continue
 
-                if is_exit_command(ses_input):
-                    print(f"Asistan: {ses_input}")
-                    break
+                # if is_exit_command(ses_input):
+                #    print(f"Asistan: {ses_input}")
+                #    break
                 
                 print("Kullanıcı: ", ses_input)
                 ses_output = cevap_olustur(ses_input)
