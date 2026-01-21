@@ -1,15 +1,14 @@
 from settings import Settings
 
-@classmethod
-def validate_api_key(cls):
+def validate_api_key():
     """API anahtarının varlığını kontrol eder"""
-    if not cls.HUGGINGFACE_API_KEY:
+    if not Settings.HUGGINGFACE_API_KEY:
         raise ValueError(
             "HUGGINGFACE_API_KEY bulunamadı! "
             "Lütfen .env dosyasında API anahtarınızı tanımlayın."
         )
         
-    if cls.HUGGINGFACE_API_KEY.strip() == "":
+    if Settings.HUGGINGFACE_API_KEY.strip() == "":
         raise ValueError(
             "HUGGINGFACE_API_KEY boş! "
             "Lütfen .env dosyasında geçerli bir API anahtarı tanımlayın."
@@ -17,28 +16,17 @@ def validate_api_key(cls):
         
     return True
     
-@classmethod
-def get_headers(cls):
-    """API çağrıları için header'ları döndürür"""
-    cls.validate_api_key()
-    return {
-        "Authorization": f"Bearer {cls.HUGGINGFACE_API_KEY}",
-        "Content-Type": "application/json"
-    }
-    
-@classmethod
-def is_exit_command(cls, text):
+def is_exit_command(text):
     """Verilen metnin çıkış komutu olup olmadığını kontrol eder"""
     if not text:
         return False
-    return text.lower().strip() in cls.EXIT_COMMANDS
+    return text.lower().strip() in Settings.EXIT_COMMANDS
 
 
 # Modül yüklendiğinde API anahtarını kontrol et
-@classmethod
-def api_key_control(cls):
+def api_key_control():
     try:
-        cls.validate_api_key()
+        Settings.validate_api_key()
         return "✅ Yapılandırma başarıyla yüklendi"
     except ValueError as e:
         return f"⚠️  Yapılandırma uyarısı: {e}"

@@ -1,14 +1,13 @@
 import os
+from settings import Settings
+from security import validate_api_key
 
 def cevap_olustur(ses_input):
     
     try:
         # API anahtarı güvenlik kontrolü
-        if not _validate_api_key_security():
+        if not validate_api_key():
             raise ValueError("API anahtarı güvenlik kontrolü başarısız")
-        
-        # API anahtarını kontrol et ve header'ları al
-        headers = Settings.get_headers()
         
         payload = {
             "messages": [
@@ -17,7 +16,7 @@ def cevap_olustur(ses_input):
                     "content": ses_input  
                 }
             ],
-
+            
             "model": Settings.LLM_MODEL
         }   
         
