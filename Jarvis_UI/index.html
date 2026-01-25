@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Jarvis Blue Interface</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+    <style>
+        /* --- ANA AYARLAR --- */
+        body {
+            margin: 0;
+            background: black;
+            background-image: 
+                linear-gradient(rgba(0, 210, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 210, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Orbitron', sans-serif;
+            /* Sayfa genelinde metin seçimini engelle */
+            -webkit-user-select: none; /* Safari */
+            -moz-user-select: none;    /* Firefox */
+            -ms-user-select: none;     /* IE10+/Edge */
+            user-select: none;         /* Standart */
+        }
+
+        :root {
+            --jarvis-blue: #00d2ff;
+        }
+
+        .ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            box-shadow: 0 0 10px var(--jarvis-blue), inset 0 0 10px var(--jarvis-blue);
+            transition: box-shadow 0.1s ease-out;
+        }
+
+        /* 1. Dış Halka */
+        .r1 {
+            width: 550px;
+            height: 550px;
+            border: 1px dashed rgba(0, 210, 255, 0.3);
+            box-shadow: none;
+            animation: spin 40s linear infinite;
+        }
+
+        /* 2. Orta Halka */
+        .r2 {
+            width: 420px;
+            height: 420px;
+            border-top: 3px solid var(--jarvis-blue);
+            border-bottom: 3px solid var(--jarvis-blue);
+            border-left: 1px solid transparent;
+            border-right: 1px solid transparent;
+            animation: spin-rev 15s linear infinite;
+        }
+
+        /* 3. İç Halka */
+        .r3 {
+            width: 320px;
+            height: 320px;
+            border: 1px solid rgba(0, 210, 255, 0.5);
+            border-left: 4px solid var(--jarvis-blue);
+            animation: spin 8s linear infinite;
+        }
+
+        /* --- MERKEZ ÇEKİRDEK (GÜNCELLENDİ) --- */
+        .core {
+            position: absolute;
+            width: 180px;  /* Genişlik artırıldı (160px -> 180px) */
+            height: 180px; /* Yükseklik artırıldı */
+            border-radius: 50%;
+            border: 2px solid var(--jarvis-blue);
+            background: rgba(0, 210, 255, 0.05);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            box-shadow: 0 0 20px var(--jarvis-blue);
+            transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
+            overflow: hidden; /* Dairenin dışına taşan her şeyi gizle */
+        }
+
+        .core-text {
+            color: var(--jarvis-blue);
+            font-size: 26px;
+            letter-spacing: 4px;
+            text-shadow: 0 0 10px var(--jarvis-blue);
+            font-weight: bold;
+            /* Metnin tek satırda kalmasını garanti et */
+            white-space: nowrap; 
+            /* Görüntü gibi davranması için tıklama olaylarını iptal et */
+            pointer-events: none; 
+        }
+
+        /* Animasyonlar */
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes spin-rev { 0% { transform: rotate(360deg); } 100% { transform: rotate(0deg); } }
+
+    </style>
+</head>
+<body>
+    <div class="ring r1"></div>
+    <div class="ring r2" id="ring2"></div>
+    <div class="ring r3"></div>
+    
+    <div class="core" id="core">
+        <span class="core-text">J.A.R.V.I.S</span>
+    </div>
+
+    <script>
+        let currentState = "idle";
+        const ring2 = document.getElementById('ring2');
+        const core = document.getElementById('core');
+
+        // Mavi Ses Efekti (Pulsing)
+        function voiceEffect() {
+            if (currentState === "speaking") {
+                const intensity = Math.floor(Math.random() * 40) + 15; 
+                const scale = 1 + (Math.random() * 0.08); 
+                
+                ring2.style.boxShadow = `0 0 ${intensity}px #00d2ff, inset 0 0 ${intensity}px #00d2ff`;
+                
+                // Çekirdek büyüdüğünde gölgesi de artsın
+                core.style.transform = `scale(${scale})`;
+                core.style.boxShadow = `0 0 ${intensity + 20}px #00d2ff, inset 0 0 20px #00d2ff`;
+
+            } else {
+                ring2.style.boxShadow = "0 0 10px #00d2ff, inset 0 0 10px #00d2ff";
+                core.style.transform = "scale(1)";
+                core.style.boxShadow = "0 0 20px #00d2ff";
+            }
+        }
+
+        setInterval(voiceEffect, 50);
+
+        // Python Bağlantısı
+        setInterval(async () => {
+            try {
+                let response = await fetch('http://127.0.0.1:5000/status');
+                let data = await response.json();
+                currentState = data.status;
+            } catch (e) {
+                currentState = "idle";
+            }
+        }, 500);
+    </script>
+</body>
+</html>
