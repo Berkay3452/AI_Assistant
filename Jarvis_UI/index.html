@@ -2,139 +2,243 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Jarvis Blue Interface</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+    <title>Jarvis Canvas Core</title>
     <style>
         /* --- ANA AYARLAR --- */
         body {
             margin: 0;
-            background: black;
-            background-image: 
-                linear-gradient(rgba(0, 210, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 210, 255, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
+            background-color: #000000;
             overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            font-family: 'Orbitron', sans-serif;
-            /* Sayfa genelinde metin seçimini engelle */
-            -webkit-user-select: none; /* Safari */
-            -moz-user-select: none;    /* Firefox */
-            -ms-user-select: none;     /* IE10+/Edge */
-            user-select: none;         /* Standart */
         }
 
-        :root {
-            --jarvis-blue: #00d2ff;
-        }
-
-        .ring {
+        /* --- 1. DIŞ ATMOSFER (Su Dalgası) --- */
+        .atmosphere {
             position: absolute;
+            width: 1100px;
+            height: 1100px;
             border-radius: 50%;
-            border: 2px solid transparent;
-            box-shadow: 0 0 10px var(--jarvis-blue), inset 0 0 10px var(--jarvis-blue);
-            transition: box-shadow 0.1s ease-out;
+            background: radial-gradient(circle, rgba(0, 40, 255, 0.12) 0%, rgba(0, 0, 50, 0.05) 60%, rgba(0,0,0,0) 80%);
+            filter: blur(50px);
+            z-index: 1;
+            transform: scale(1);
+            opacity: 0.9;
+            transition: all 0.3s ease-out;
         }
 
-        /* 1. Dış Halka */
-        .r1 {
-            width: 550px;
-            height: 550px;
-            border: 1px dashed rgba(0, 210, 255, 0.3);
-            box-shadow: none;
-            animation: spin 40s linear infinite;
-        }
-
-        /* 2. Orta Halka */
-        .r2 {
-            width: 420px;
-            height: 420px;
-            border-top: 3px solid var(--jarvis-blue);
-            border-bottom: 3px solid var(--jarvis-blue);
-            border-left: 1px solid transparent;
-            border-right: 1px solid transparent;
-            animation: spin-rev 15s linear infinite;
-        }
-
-        /* 3. İç Halka */
-        .r3 {
-            width: 320px;
-            height: 320px;
-            border: 1px solid rgba(0, 210, 255, 0.5);
-            border-left: 4px solid var(--jarvis-blue);
-            animation: spin 8s linear infinite;
-        }
-
-        /* --- MERKEZ ÇEKİRDEK (GÜNCELLENDİ) --- */
-        .core {
+        /* --- 2. ANA HALE (CORONA) --- */
+        .corona {
             position: absolute;
-            width: 180px;  /* Genişlik artırıldı (160px -> 180px) */
-            height: 180px; /* Yükseklik artırıldı */
+            width: 520px;
+            height: 520px;
             border-radius: 50%;
-            border: 2px solid var(--jarvis-blue);
-            background: rgba(0, 210, 255, 0.05);
+            background: radial-gradient(circle, transparent 60%, rgba(0, 210, 255, 0.5) 65%, rgba(0, 100, 255, 0.1) 80%);
+            box-shadow: 0 0 90px rgba(0, 90, 255, 0.5);
+            z-index: 2;
+            transition: all 0.2s ease-out;
+        }
+
+        /* --- 3. ÇEKİRDEK KAPSAYICI --- */
+        .void-container {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0,0,0,1) 40%, #000000 100%);
+            z-index: 3;
+            box-shadow: inset 0 0 60px rgba(0, 50, 255, 0.3);
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 10;
-            box-shadow: 0 0 20px var(--jarvis-blue);
-            transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
-            overflow: hidden; /* Dairenin dışına taşan her şeyi gizle */
         }
 
-        .core-text {
-            color: var(--jarvis-blue);
-            font-size: 26px;
-            letter-spacing: 4px;
-            text-shadow: 0 0 10px var(--jarvis-blue);
-            font-weight: bold;
-            /* Metnin tek satırda kalmasını garanti et */
-            white-space: nowrap; 
-            /* Görüntü gibi davranması için tıklama olaylarını iptal et */
-            pointer-events: none; 
+        /* --- 4. CANVAS (NOKTALAR BURADA) --- */
+        canvas {
+            border-radius: 50%;
+            /* Canvas HTML elementlerinden bağımsız olduğu için çok hızlıdır */
         }
 
-        /* Animasyonlar */
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes spin-rev { 0% { transform: rotate(360deg); } 100% { transform: rotate(0deg); } }
-
+        /* --- ANİMASYONLAR (Sadece Dış Efektler İçin) --- */
+        @keyframes wave-pulse {
+            0% { transform: scale(0.95); opacity: 0.7; }
+            50% { transform: scale(1.15); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.7; }
+        }
     </style>
 </head>
 <body>
-    <div class="ring r1"></div>
-    <div class="ring r2" id="ring2"></div>
-    <div class="ring r3"></div>
+    <div class="atmosphere" id="atmosphere"></div>
+    <div class="corona" id="corona"></div>
     
-    <div class="core" id="core">
-        <span class="core-text">J.A.R.V.I.S</span>
+    <div class="void-container">
+        <canvas id="particleCanvas"></canvas>
     </div>
 
     <script>
         let currentState = "idle";
-        const ring2 = document.getElementById('ring2');
-        const core = document.getElementById('core');
+        
+        // --- CANVAS AYARLARI ---
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
 
-        // Mavi Ses Efekti (Pulsing)
-        function voiceEffect() {
-            if (currentState === "speaking") {
-                const intensity = Math.floor(Math.random() * 40) + 15; 
-                const scale = 1 + (Math.random() * 0.08); 
-                
-                ring2.style.boxShadow = `0 0 ${intensity}px #00d2ff, inset 0 0 ${intensity}px #00d2ff`;
-                
-                // Çekirdek büyüdüğünde gölgesi de artsın
-                core.style.transform = `scale(${scale})`;
-                core.style.boxShadow = `0 0 ${intensity + 20}px #00d2ff, inset 0 0 20px #00d2ff`;
+        // Canvas boyutunu container'a göre ayarla (Retina ekranlar için netlik sağlar)
+        const size = 500;
+        canvas.width = size;
+        canvas.height = size;
 
-            } else {
-                ring2.style.boxShadow = "0 0 10px #00d2ff, inset 0 0 10px #00d2ff";
-                core.style.transform = "scale(1)";
-                core.style.boxShadow = "0 0 20px #00d2ff";
+        // Merkez noktası
+        const centerX = size / 2;
+        const centerY = size / 2;
+
+        // --- PARTİKÜL SİSTEMİ DEĞİŞKENLERİ ---
+        const stars = [];
+        const numStars = 1400; // Yüksek sayı ama Canvas ile hiç kasmaz
+        const sphereRadius = 220;
+        let rotationSpeed = 0.002; // Temel dönüş hızı
+
+        // Ses efekti için değişkenler
+        let baseSize = 2; // Normal nokta boyutu
+        let glowIntensity = 10; // Normal parlama
+
+        // --- YILDIZ SINIFI ---
+        class Star {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                // Rastgele küresel koordinatlar
+                const theta = Math.random() * 2 * Math.PI;
+                const phi = Math.acos((Math.random() * 2) - 1);
+                
+                // Yarıçapta hafif rastgelelik (Hacim hissi için)
+                const r = sphereRadius * (0.8 + Math.random() * 0.2);
+
+                this.x = r * Math.sin(phi) * Math.cos(theta);
+                this.y = r * Math.sin(phi) * Math.sin(theta);
+                this.z = r * Math.cos(phi);
+                
+                // Rastgele boyut (2px - 4px arası)
+                this.size = Math.random() * 2 + 2; 
+                this.originalSize = this.size;
+                
+                // Rastgele ömür (Yanıp sönme efekti için)
+                this.opacity = Math.random();
+                this.fadeDir = Math.random() > 0.5 ? 0.01 : -0.01;
+            }
+
+            update(rotationSpeed) {
+                // --- MATEMATİKSEL DÖNÜŞ (3D ROTATION MATRIX) ---
+                // Y Ekseni Etrafında Dönüş (Kendi ekseni)
+                const rotY = rotationSpeed;
+                const x = this.x * Math.cos(rotY) - this.z * Math.sin(rotY);
+                const z = this.z * Math.cos(rotY) + this.x * Math.sin(rotY);
+                this.x = x;
+                this.z = z;
+
+                // X Ekseni Etrafında Hafif Eğim (Gezegen eğikliği - 20 derece sabit)
+                // Bu kısmı sadece projeksiyonda yapıyoruz, kalıcı koordinatı bozmuyoruz.
+
+                // --- YANIP SÖNME EFEKTİ ---
+                this.opacity += this.fadeDir;
+                if (this.opacity >= 1 || this.opacity <= 0.2) {
+                    this.fadeDir = -this.fadeDir; // Yönü tersine çevir
+                }
+            }
+
+            draw() {
+                // --- 3D -> 2D PROJEKSİYON ---
+                // Perspektif formülü: scale = focalLength / (focalLength + z)
+                const focalLength = 400;
+                const scale = focalLength / (focalLength + this.z);
+
+                // Ekran koordinatları
+                const screenX = centerX + this.x * scale;
+                const screenY = centerY + this.y * scale;
+
+                // Arkada kalanlar çizilmesin veya çok silik olsun
+                if (scale < 0) return;
+
+                // Derinlik bazlı opaklık (Arkadakiler karanlık)
+                const depthAlpha = (this.z + sphereRadius) / (2 * sphereRadius); // 0 (arka) - 1 (ön)
+                // Yanıp sönme ile derinliği birleştir
+                const finalAlpha = Math.max(0, Math.min(1, this.opacity * depthAlpha));
+
+                // Çizim
+                ctx.beginPath();
+                // Boyutu sese göre güncelle
+                const currentSize = this.size * scale * (currentState === "speaking" ? 1.2 : 1);
+                
+                ctx.arc(screenX, screenY, currentSize, 0, 2 * Math.PI);
+                
+                // Renk ve Parlama
+                ctx.fillStyle = `rgba(0, 210, 255, ${finalAlpha})`;
+                
+                // Canvas Shadow (Glow Efekti)
+                // Performans için sadece öndekilere glow verelim
+                if (finalAlpha > 0.7) {
+                    ctx.shadowBlur = glowIntensity;
+                    ctx.shadowColor = "rgba(0, 210, 255, 0.8)";
+                } else {
+                    ctx.shadowBlur = 0;
+                }
+                
+                ctx.fill();
             }
         }
 
+        // Yıldızları oluştur
+        for (let i = 0; i < numStars; i++) {
+            stars.push(new Star());
+        }
+
+        // --- ANIMASYON DÖNGÜSÜ (GPU) ---
+        function animate() {
+            // Ekranı temizle
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Her yıldızı güncelle ve çiz
+            stars.forEach(star => {
+                star.update(rotationSpeed);
+                star.draw();
+            });
+
+            requestAnimationFrame(animate);
+        }
+        animate(); // Döngüyü başlat
+
+        // --- SES VE EFEKT YÖNETİMİ ---
+        const corona = document.getElementById('corona');
+        const atmosphere = document.getElementById('atmosphere');
+
+        function voiceEffect() {
+            if (currentState === "speaking") {
+                // 1. Dönüşü Hızlandır (Ters yönde)
+                // Canvas'ta ters yön için negatif değer kullanılır
+                rotationSpeed = -0.02; // Çok hızlı
+                glowIntensity = 20;    // Parlamayı artır
+
+                // 2. Dış Efektler
+                const waveSpeed = (Math.random() * 2 + 2) + 's';
+                atmosphere.style.animation = `wave-pulse ${waveSpeed} ease-in-out infinite`;
+                corona.style.transform = `scale(${1 + Math.random() * 0.05})`;
+                corona.style.boxShadow = `0 0 ${100 + Math.random() * 50}px rgba(0, 180, 255, 0.9)`;
+
+            } else {
+                // Normale Dönüş
+                rotationSpeed = -0.002; // Yavaş ve sakin
+                glowIntensity = 5;      // Normal parlama
+
+                atmosphere.style.animation = "none";
+                atmosphere.style.transform = "scale(1)";
+                atmosphere.style.opacity = "0.9";
+                corona.style.transform = "scale(1)";
+                corona.style.boxShadow = "0 0 90px rgba(0, 90, 255, 0.5)";
+            }
+        }
         setInterval(voiceEffect, 50);
 
         // Python Bağlantısı
@@ -143,10 +247,9 @@
                 let response = await fetch('http://127.0.0.1:5000/status');
                 let data = await response.json();
                 currentState = data.status;
-            } catch (e) {
-                currentState = "idle";
-            }
+            } catch (e) { currentState = "idle"; }
         }, 500);
+
     </script>
 </body>
 </html>
