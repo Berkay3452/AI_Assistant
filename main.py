@@ -15,27 +15,20 @@ if __name__ == "__main__":
     try:
         while True:
             try:
-                ses_input = sesi_dinle()
-                if not ses_input:
+                voice_input = sesi_dinle()
+                if not voice_input:
                     continue
 
-                # Hata mesajlarını kontrol et
-                if (ses_input == "Anlayamadım, lütfen tekrar edin." or 
-                    ses_input == "Ses algılanamadı, lütfen tekrar deneyin." or 
-                    ses_input == "Bağlantı hatası! Google API'ye erişim sağlanamadı."):
-                    print(ses_input)
-                    continue
-
-                if is_exit_command(ses_input):
+                if is_exit_command(voice_input):
                    print("Asistan: Görüşürüz efendim!")
                    break
                 
                 server.set_state("speaking")
 
-                print("Kullanıcı: ", ses_input)
-                ses_output = cevap_olustur(ses_input) 
-                print("Asistan: ", ses_output) # Asistanın cevabını terminale yazdırıyor.
-                asyncio.run(sesli_cevap(ses_output)) # Asistanın cevabını sesli olarak veriyor.
+                print("Kullanıcı: ", voice_input) # Kullanıcının söylediğini terminale yazdırıyor.
+                voice_output = cevap_olustur(voice_input)  
+                print("Asistan: ", voice_output) # Asistanın cevabını terminale yazdırıyor.
+                sesli_cevap(voice_output) # Asistanın cevabını sesli olarak veriyor.
 
             except Exception as e:
                 print(f"Bir hata oluştu: {e}")

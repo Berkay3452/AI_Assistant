@@ -1,24 +1,32 @@
-import edge_tts
-import tempfile
-import os 
-from playsound import playsound
+import pyttsx3
 
-async def sesli_cevap(ses_output):
+engine = pyttsx3.init()
+
+# Hız: 150-170 arası idealdir. (Daha hızlı istersen artır)
+engine.setProperty('rate', 160)
+
+# Ses Seviyesi (0.0 ile 1.0 arası)
+engine.setProperty('volume', 1.0)
+
+# Türkçe Sesi Ayarla
+voices = engine.getProperty('voices')
+voice_found = False
+
+for voice in voices:
+    # Bilgisayarındaki Türkçe sesi bulmaya çalışır
+    if "Turkish" in voice.name or "TR" in voice.id or "Microsoft Tolga" in voice.name:
+        engine.setProperty('voice', voice.id)
+        voice_found = True
+        break
+
+if not voice_found:
+    print("Uyarı: Türkçe ses paketi bulunamadı, varsayılan ses kullanılacak.")
+
+def sesli_cevap(voice_output):
     try:
-        if ses_output:
-            communicate = edge_tts.Communicate(text=ses_output, voice="tr-TR-AhmetNeural")
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as temp:
-               temp_file = temp.name
-            await communicate.save(temp_file)
-            playsound(temp_file)
-        else:
-            print("Sesli cevap için geçerli bir çıktı sağlanmadı.")        
+        engine.say(voice_output)
+        engine.runAndWait()
+
     except Exception as e:
-        print(f"Sesli cevap verme hatası: {e}")   
-    finally:
-        if os.path.exists(temp_file):
-            try:
-                os.remove(temp_file)     
-            except Exception as e:
-                print(f"Dosya silinemedi: {e}")
+        print(f"Sesli cevap hatası: {e}")
 

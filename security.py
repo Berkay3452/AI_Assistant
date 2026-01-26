@@ -1,38 +1,12 @@
 from settings import Settings
-
-def validate_api_key():
-    """API anahtarının varlığını kontrol eder"""
-    if not Settings.HUGGINGFACE_API_KEY:
-        raise ValueError(
-            "HUGGINGFACE_API_KEY bulunamadı! "
-            "Lütfen .env dosyasında API anahtarınızı tanımlayın."
-        )
-        
-    if Settings.HUGGINGFACE_API_KEY.strip() == "":
-        raise ValueError(
-            "HUGGINGFACE_API_KEY boş! "
-            "Lütfen .env dosyasında geçerli bir API anahtarı tanımlayın."
-        )
-        
-    return True
-    
+ 
 def is_exit_command(text):
     """Verilen metnin çıkış komutu olup olmadığını kontrol eder"""
     if not text:
         return False
     return text.lower().strip() in Settings.EXIT_COMMANDS
 
-
-# Modül yüklendiğinde API anahtarını kontrol et
-def api_key_control():
-    try:
-        Settings.validate_api_key()
-        return "✅ Yapılandırma başarıyla yüklendi"
-    except ValueError as e:
-        return f"⚠️  Yapılandırma uyarısı: {e}"
-
-
-def _check_gitignore_security():
+def check_gitignore_security():
     """
     .env dosyasının .gitignore'da olduğunu kontrol eder (güvenlik)
     
